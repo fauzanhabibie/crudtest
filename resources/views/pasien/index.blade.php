@@ -30,7 +30,7 @@
                       <td>{{ $p->nama_lengkap }} </td>
                       <td>{{ $p->jenis_kelamin  }}</td>
                       <td>
-                        <a href="#" class="btn btn-sm btn-info">Detail</a>
+                        <button  href="#" class="btn btn-sm btn-info">Detail</button>
                         <a href="#" class="btn btn-sm btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus data pasien ini?')">Hapus</a>
                       </td>
 
