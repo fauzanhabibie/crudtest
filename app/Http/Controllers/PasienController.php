@@ -13,7 +13,8 @@ class PasienController extends Controller
     public function index()
     {
 
-        $pasien = Pasien::all();
+        $pasien = Pasien::latest()->get();
+
 
         $data = [
             'pasien' => $pasien,
@@ -45,8 +46,7 @@ class PasienController extends Controller
         $pasien = new Pasien;
         $pasien->nama_lengkap = $request->nama_lengkap;
         $pasien->nik = $request->nik;
-        $alamat = $request->alamat; // Assuming you want to store the entire address in one field
-        $pasien->alamat = $alamat;
+        $pasien->alamat = $request->alamat; // Assuming you want to store the entire address in one field
         $pasien->jenis_kelamin = $request->jenis_kelamin;
 
         // Save the Pasien to the database
@@ -61,32 +61,63 @@ class PasienController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Pasien $pasien)
+    public function show( Pasien $pasien)
     {
-        //
+
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Pasien $pasien)
+    public function edit( Pasien $pasien)
     {
-        //
+
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Pasien $pasien)
+    public function update(Request $request, $id)
     {
-        //
+
+        $pasien = Pasien::findOrFail($id);
+
+        $request->validate([
+            'nama_lengkap' => 'required|string|max:255',
+            'nik' => 'required|string|max:255|unique:pasiens,nik,' . $pasien->id, // Add unique validation for NIK
+            'alamat' => 'required|string',
+            'jenis_kelamin' => 'required|string|in:laki-laki,perempuan', // Restrict values to laki-laki or perempuan
+        ]);
+
+
+        $pasien->nama_lengkap = $request->nama_lengkap;
+        $pasien->nik = $request->nik;
+        $pasien->alamat = $request->alamat; // Assuming you want to store the entire address in one field
+        $pasien->jenis_kelamin = $request->jenis_kelamin;
+
+        // Save the Pasien to the database
+        $pasien->save();
+
+        return redirect()->back()->with('success', 'Pembaruan data pasien berhasil ');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Pasien $pasien)
+    public function delete($id_pasien)
     {
-        //
+        $pasien = Pasien::findOrFail($id_pasien);
+        if (!$pasien) {
+            return redirect()->back()->with('error', 'Data pasien tidak ditemukan!');
+        }
+
+
+        // Delete the patient
+        $pasien->delete();
+
+        // Flash a success message
+
+        // Redirect back or to a specific route
+        return redirect()->back()->with('success', 'Data pasien berhasil dihapus!'); // Redirect back with success message
     }
 }
